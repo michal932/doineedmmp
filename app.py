@@ -308,187 +308,183 @@ st.plotly_chart(fig, use_container_width=True)
 st.markdown("---")
 st.header("💡 Recommendations for Your App")
 
-# Create two columns for dual recommendations
-col_skan, col_mmp = st.columns(2)
-
 # ============================================================================
-# SKAN RECOMMENDATION
+# MMP RECOMMENDATION (Primary)
 # ============================================================================
-with col_skan:
-    st.subheader("📱 SKAdNetwork (SKAN)")
-    st.markdown(f"### {skan_level}")
+st.subheader("🔧 Mobile Measurement Partner")
 
-    # Generate SKAN explanation
-    skan_explanation = []
+# Determine the recommendation category
+if is_high_budget and is_high_complexity:
+    category = "MMP IS NECESSARY"
+    color = "red"
+    icon = "🔴"
+elif is_high_budget and not is_high_complexity:
+    category = "GRAY ZONE (RISK)"
+    color = "orange"
+    icon = "🟠"
+elif not is_high_budget and is_high_complexity:
+    category = "TECHNICAL NEED"
+    color = "blue"
+    icon = "🔵"
+else:
+    category = "YOU DON'T NEED AN MMP"
+    color = "green"
+    icon = "🟢"
 
-    skan_explanation.append(
-        f"Your **iOS budget is €{int(monthly_ios_budget):,}/month** "
-        f"({ios_share}% of €{monthly_budget:,})."
+st.markdown(f"### {icon} **{category}**")
+
+# Generate detailed recommendation text
+recommendation_parts = []
+
+# Main assessment
+if category == "MMP IS NECESSARY":
+    recommendation_parts.append(
+        f"With a monthly budget of **€{monthly_budget:,}** and **{num_channels} "
+        f"marketing channel{'s' if num_channels > 1 else ''}**, you definitely need an MMP solution."
+    )
+    recommendation_parts.append(
+        "**Why?** At this investment level and channel complexity, professional "
+        "measurement and attribution are critical for performance optimization and fraud prevention."
     )
 
-    if skan_relevance == "high":
-        skan_explanation.append(
-            "**Why SKAN makes sense:**\n"
-            "- Budget is sufficient to optimize SKAN campaigns\n"
-            "- You can measure post-install events and revenue\n"
-            "- SKAN conversion values will improve campaign performance"
+elif category == "GRAY ZONE (RISK)":
+    recommendation_parts.append(
+        f"Your budget of **€{monthly_budget:,}** is high enough to justify an MMP investment, "
+        "but you're currently working with only **one channel**."
+    )
+    recommendation_parts.append(
+        "**⚠️ Risks without MMP:**\n"
+        "- **Vendor lock-in:** Dependence on a single ad channel's reporting\n"
+        "- **Ad fraud:** Higher risk of fraudulent installs without independent verification\n"
+        "- **Scalability:** When you add more channels, you'll regret not starting earlier"
+    )
+    recommendation_parts.append(
+        "**Recommendation:** Consider an MMP to protect your investment and prepare for growth."
+    )
+
+elif category == "TECHNICAL NEED":
+    recommendation_parts.append(
+        f"You're working with **{num_channels} marketing channels**"
+        + (" and using **affiliate partners**" if uses_affiliate else "")
+        + f", but your budget is currently at **€{monthly_budget:,}**."
+    )
+
+    if uses_affiliate:
+        recommendation_parts.append(
+            "**🔴 Affiliate/Influencer marketing requires an MMP!**\n"
+            "For performance-based campaigns (CPA), you need to send postbacks to partners. "
+            "Without an MMP, you have no way to automate conversion communication."
         )
 
-        if monetization_skan_boost:
-            skan_explanation.append(
-                f"**{monetization_model}** models benefit significantly from SKAN "
-                "revenue tracking and conversion value optimization."
-            )
+    recommendation_parts.append(
+        "**Technical necessity:** Multi-channel measurement requires a centralized solution. "
+        "Consider **free tier** MMP tools (e.g., AppsFlyer, Adjust) or "
+        "cheaper alternatives for small projects."
+    )
 
-    elif skan_relevance == "medium":
-        skan_explanation.append(
-            "**Limited SKAN value:**\n"
-            "- Budget is modest but can support basic SKAN setup\n"
-            "- Focus on high-value conversion events only\n"
-            "- ROI may be marginal at this spend level"
+else:  # YOU DON'T NEED AN MMP
+    recommendation_parts.append(
+        f"With a budget of **€{monthly_budget:,}** and **a single marketing channel**, "
+        "you don't yet need a dedicated MMP solution."
+    )
+    recommendation_parts.append(
+        "**Recommendation:**\n"
+        "- Use **Firebase Analytics** or **Google Analytics for Firebase** (free)\n"
+        "- Rely on reporting directly from your ad channel\n"
+        "- Monitor the situation: once you add a second channel or increase your budget, an MMP will make sense"
+    )
+
+# iOS-specific warning
+if ios_share > 50:
+    recommendation_parts.append(
+        f"**📱 iOS Warning:** More than **{ios_share}% of your users** are on iOS. "
+        "Due to **SKAdNetwork** and iOS 14.5+ ATT, measurement on iOS is extremely complex. "
+        "Even with a lower budget, an MMP helps process and normalize SKAdNetwork data."
+    )
+
+    if monthly_budget >= 800 and monthly_budget < 2000:
+        recommendation_parts.append(
+            "⚠️ **Threshold adjusted:** Due to high iOS share, the recommended "
+            "MMP threshold is lowered from €2,000 to **€800 per month**."
         )
 
-        if monetization_skan_boost:
-            skan_explanation.append(
-                f"Your **{monetization_model}** model increases SKAN priority. "
-                "Proper setup can help optimize for high-LTV users."
-            )
-
-        if primary_goal in ["Purchase", "Trial Start"]:
-            skan_explanation.append(
-                f"Your goal (**{primary_goal}**) aligns well with SKAN conversion tracking."
-            )
-
-    else:  # low relevance
-        skan_explanation.append(
-            "**Why SKAN doesn't make sense yet:**\n"
-            "- iOS budget is too low for meaningful SKAN optimization\n"
-            "- Setup complexity outweighs potential benefits\n"
-            "- Focus on increasing budget or iOS share first"
-        )
-
-        if ios_share < 30:
-            skan_explanation.append(
-                f"Your iOS share is only {ios_share}%. SKAN becomes valuable when "
-                "iOS represents a larger portion of your user base."
-            )
-
-    # Special case: No monetization
-    if monetization_model == "No monetization":
-        skan_explanation.append(
-            "**⚠️ Note:** Without monetization, SKAN revenue signals won't apply. "
-            "Focus on event-based conversion values instead."
-        )
-
-    for part in skan_explanation:
-        st.markdown(part)
-        st.markdown("")
+# Display recommendation
+for part in recommendation_parts:
+    st.markdown(part)
+    st.markdown("")
 
 # ============================================================================
-# MMP RECOMMENDATION
+# SKAN RECOMMENDATION (Secondary)
 # ============================================================================
-with col_mmp:
-    st.subheader("🔧 Mobile Measurement Partner")
+st.markdown("---")
+st.subheader("📱 SKAdNetwork (SKAN)")
+st.markdown(f"### {skan_level}")
 
-    # Determine the recommendation category
-    if is_high_budget and is_high_complexity:
-        category = "MMP IS NECESSARY"
-        color = "red"
-        icon = "🔴"
-    elif is_high_budget and not is_high_complexity:
-        category = "GRAY ZONE (RISK)"
-        color = "orange"
-        icon = "🟠"
-    elif not is_high_budget and is_high_complexity:
-        category = "TECHNICAL NEED"
-        color = "blue"
-        icon = "🔵"
-    else:
-        category = "YOU DON'T NEED AN MMP"
-        color = "green"
-        icon = "🟢"
+# Generate SKAN explanation
+skan_explanation = []
 
-    st.markdown(f"### {icon} **{category}**")
+skan_explanation.append(
+    f"Your **iOS budget is €{int(monthly_ios_budget):,}/month** "
+    f"({ios_share}% of €{monthly_budget:,})."
+)
 
-    # Generate detailed recommendation text
-    recommendation_parts = []
+if skan_relevance == "high":
+    skan_explanation.append(
+        "**Why SKAN makes sense:**\n"
+        "- Budget is sufficient to optimize SKAN campaigns\n"
+        "- You can measure post-install events and revenue\n"
+        "- SKAN conversion values will improve campaign performance"
+    )
 
-    # Main assessment
-    if category == "MMP IS NECESSARY":
-        recommendation_parts.append(
-            f"With a monthly budget of **€{monthly_budget:,}** and **{num_channels} "
-            f"marketing channel{'s' if num_channels > 1 else ''}**, you definitely need an MMP solution."
-        )
-        recommendation_parts.append(
-            "**Why?** At this investment level and channel complexity, professional "
-            "measurement and attribution are critical for performance optimization and fraud prevention."
+    if monetization_skan_boost:
+        skan_explanation.append(
+            f"**{monetization_model}** models benefit significantly from SKAN "
+            "revenue tracking and conversion value optimization."
         )
 
-    elif category == "GRAY ZONE (RISK)":
-        recommendation_parts.append(
-            f"Your budget of **€{monthly_budget:,}** is high enough to justify an MMP investment, "
-            "but you're currently working with only **one channel**."
-        )
-        recommendation_parts.append(
-            "**⚠️ Risks without MMP:**\n"
-            "- **Vendor lock-in:** Dependence on a single ad channel's reporting\n"
-            "- **Ad fraud:** Higher risk of fraudulent installs without independent verification\n"
-            "- **Scalability:** When you add more channels, you'll regret not starting earlier"
-        )
-        recommendation_parts.append(
-            "**Recommendation:** Consider an MMP to protect your investment and prepare for growth."
+elif skan_relevance == "medium":
+    skan_explanation.append(
+        "**Limited SKAN value:**\n"
+        "- Budget is modest but can support basic SKAN setup\n"
+        "- Focus on high-value conversion events only\n"
+        "- ROI may be marginal at this spend level"
+    )
+
+    if monetization_skan_boost:
+        skan_explanation.append(
+            f"Your **{monetization_model}** model increases SKAN priority. "
+            "Proper setup can help optimize for high-LTV users."
         )
 
-    elif category == "TECHNICAL NEED":
-        recommendation_parts.append(
-            f"You're working with **{num_channels} marketing channels**"
-            + (" and using **affiliate partners**" if uses_affiliate else "")
-            + f", but your budget is currently at **€{monthly_budget:,}**."
+    if primary_goal in ["Purchase", "Trial Start"]:
+        skan_explanation.append(
+            f"Your goal (**{primary_goal}**) aligns well with SKAN conversion tracking."
         )
 
-        if uses_affiliate:
-            recommendation_parts.append(
-                "**🔴 Affiliate/Influencer marketing requires an MMP!**\n"
-                "For performance-based campaigns (CPA), you need to send postbacks to partners. "
-                "Without an MMP, you have no way to automate conversion communication."
-            )
+else:  # low relevance
+    skan_explanation.append(
+        "**Why SKAN doesn't make sense yet:**\n"
+        "- iOS budget is too low for meaningful SKAN optimization\n"
+        "- Setup complexity outweighs potential benefits\n"
+        "- Focus on increasing budget or iOS share first"
+    )
 
-        recommendation_parts.append(
-            "**Technical necessity:** Multi-channel measurement requires a centralized solution. "
-            "Consider **free tier** MMP tools (e.g., AppsFlyer, Adjust) or "
-            "cheaper alternatives for small projects."
+    if ios_share < 30:
+        skan_explanation.append(
+            f"Your iOS share is only {ios_share}%. SKAN becomes valuable when "
+            "iOS represents a larger portion of your user base."
         )
 
-    else:  # YOU DON'T NEED AN MMP
-        recommendation_parts.append(
-            f"With a budget of **€{monthly_budget:,}** and **a single marketing channel**, "
-            "you don't yet need a dedicated MMP solution."
-        )
-        recommendation_parts.append(
-            "**Recommendation:**\n"
-            "- Use **Firebase Analytics** or **Google Analytics for Firebase** (free)\n"
-            "- Rely on reporting directly from your ad channel\n"
-            "- Monitor the situation: once you add a second channel or increase your budget, an MMP will make sense"
-        )
+# Special case: No monetization
+if monetization_model == "No monetization":
+    skan_explanation.append(
+        "**⚠️ Note:** Without monetization, SKAN revenue signals won't apply. "
+        "Focus on event-based conversion values instead."
+    )
 
-    # iOS-specific warning
-    if ios_share > 50:
-        recommendation_parts.append(
-            f"**📱 iOS Warning:** More than **{ios_share}% of your users** are on iOS. "
-            "Due to **SKAdNetwork** and iOS 14.5+ ATT, measurement on iOS is extremely complex. "
-            "Even with a lower budget, an MMP helps process and normalize SKAdNetwork data."
-        )
-
-        if monthly_budget >= 800 and monthly_budget < 2000:
-            recommendation_parts.append(
-                "⚠️ **Threshold adjusted:** Due to high iOS share, the recommended "
-                "MMP threshold is lowered from €2,000 to **€800 per month**."
-            )
-
-    # Display recommendation
-    for part in recommendation_parts:
-        st.markdown(part)
-        st.markdown("")
+for part in skan_explanation:
+    st.markdown(part)
+    st.markdown("")
 
 # Additional info section
 st.markdown("---")
