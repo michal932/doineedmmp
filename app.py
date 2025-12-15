@@ -79,14 +79,36 @@ primary_goal = st.sidebar.selectbox(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### 📊 Current Values")
-st.sidebar.metric("Total Budget", f"€{monthly_budget:,}")
-st.sidebar.metric("iOS Budget", f"€{int(monthly_budget * ios_share / 100):,}")
-st.sidebar.metric("Channels", num_channels)
-st.sidebar.metric("iOS Share", f"{ios_share}%")
+st.sidebar.markdown("### 💰 iOS Budget")
+
+# Input 8: Checkbox for separate iOS budget
+use_separate_ios_budget = st.sidebar.checkbox(
+    "I have a separate iOS budget",
+    help="Check this if you allocate a specific budget for iOS campaigns separately from your total budget"
+)
 
 # Calculate iOS-specific budget
-monthly_ios_budget = monthly_budget * (ios_share / 100)
+if use_separate_ios_budget:
+    # Input 9: Separate iOS Budget slider
+    monthly_ios_budget = st.sidebar.slider(
+        "Monthly iOS Budget (€):",
+        min_value=0,
+        max_value=20000,
+        value=int(monthly_budget * ios_share / 100),
+        step=100,
+        format="€%d",
+        help="Your dedicated iOS marketing budget per month"
+    )
+else:
+    # Calculate from total budget and iOS share
+    monthly_ios_budget = monthly_budget * (ios_share / 100)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 📊 Current Values")
+st.sidebar.metric("Total Budget", f"€{monthly_budget:,}")
+st.sidebar.metric("iOS Budget", f"€{int(monthly_ios_budget):,}")
+st.sidebar.metric("Channels", num_channels)
+st.sidebar.metric("iOS Share", f"{ios_share}%")
 
 # ============================================================================
 # SKAN RELEVANCE EVALUATION
@@ -423,10 +445,15 @@ st.markdown(f"### {skan_level}")
 # Generate SKAN explanation
 skan_explanation = []
 
-skan_explanation.append(
-    f"Your **iOS budget is €{int(monthly_ios_budget):,}/month** "
-    f"({ios_share}% of €{monthly_budget:,})."
-)
+if use_separate_ios_budget:
+    skan_explanation.append(
+        f"Your **dedicated iOS budget is €{int(monthly_ios_budget):,}/month**."
+    )
+else:
+    skan_explanation.append(
+        f"Your **iOS budget is €{int(monthly_ios_budget):,}/month** "
+        f"({ios_share}% of total €{monthly_budget:,} budget)."
+    )
 
 if skan_relevance == "high":
     skan_explanation.append(
