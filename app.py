@@ -52,36 +52,14 @@ ios_share = st.sidebar.slider(
 
 # Input 4: Affiliate strategy
 uses_affiliate = st.sidebar.checkbox(
-    "I use Affiliate partners / Performance-based Influencers (CPA)"
-)
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🎯 App Details")
-
-# Input 5: App Category
-app_category = st.sidebar.selectbox(
-    "App Category:",
-    ["Gaming", "Finance", "E-commerce", "Education", "Health & Fitness",
-     "Lifestyle", "Utilities", "Media", "Other"]
-)
-
-# Input 6: Monetization Model
-monetization_model = st.sidebar.selectbox(
-    "Monetization Model:",
-    ["Subscription", "Subscription with trial", "In-app purchases",
-     "Hybrid", "Ad-based", "No monetization"]
-)
-
-# Input 7: Primary Goal
-primary_goal = st.sidebar.selectbox(
-    "Primary Acquisition Goal:",
-    ["Install", "Registration", "Trial Start", "Purchase", "Retention/Engagement"]
+    "I use Affiliate partners / Performance-based Influencers (CPA)",
+    help="Affiliate marketing requires MMP for postback automation"
 )
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 💰 iOS Budget")
 
-# Input 8: Checkbox for separate iOS budget
+# Input 5: Checkbox for separate iOS budget
 use_separate_ios_budget = st.sidebar.checkbox(
     "I have a separate iOS budget",
     help="Check this if you allocate a specific budget for iOS campaigns separately from your total budget"
@@ -89,7 +67,7 @@ use_separate_ios_budget = st.sidebar.checkbox(
 
 # Calculate iOS-specific budget
 if use_separate_ios_budget:
-    # Input 9: Separate iOS Budget slider
+    # Input 6: Separate iOS Budget slider
     monthly_ios_budget = st.sidebar.slider(
         "Monthly iOS Budget (€):",
         min_value=0,
@@ -102,6 +80,32 @@ if use_separate_ios_budget:
 else:
     # Calculate from total budget and iOS share
     monthly_ios_budget = monthly_budget * (ios_share / 100)
+
+st.sidebar.markdown("---")
+
+# Collapsible App Details section
+with st.sidebar.expander("🎯 App Details (Optional for SKAN)"):
+    st.markdown("*These details help optimize SKAN recommendations*")
+
+    # Input 7: App Category
+    app_category = st.selectbox(
+        "App Category:",
+        ["Gaming", "Finance", "E-commerce", "Education", "Health & Fitness",
+         "Lifestyle", "Utilities", "Media", "Other"]
+    )
+
+    # Input 8: Monetization Model
+    monetization_model = st.selectbox(
+        "Monetization Model:",
+        ["Subscription", "Subscription with trial", "In-app purchases",
+         "Hybrid", "Ad-based", "No monetization"]
+    )
+
+    # Input 9: Primary Goal
+    primary_goal = st.selectbox(
+        "Primary Acquisition Goal:",
+        ["Install", "Registration", "Trial Start", "Purchase", "Retention/Engagement"]
+    )
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📊 Current Values")
