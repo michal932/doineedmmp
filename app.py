@@ -39,38 +39,19 @@ num_channels = st.sidebar.slider(
     step=1
 )
 
-# Input 3: iOS share
-ios_share = st.sidebar.slider(
-    "iOS User Share (%):",
-    min_value=0,
-    max_value=100,
-    value=30,
-    step=5,
-    format="%d%%"
-)
-
-# Input 4: Affiliate strategy
+# Input 3: Affiliate strategy
 uses_affiliate = st.sidebar.checkbox(
     "I use Affiliate partners / Performance-based Influencers (CPA)",
     help="Affiliate marketing requires MMP for postback automation"
 )
 
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 📊 Current Values")
-st.sidebar.metric("Total Budget", f"€{monthly_budget:,}")
-st.sidebar.metric("Channels", num_channels)
-st.sidebar.metric("iOS Share", f"{ios_share}%")
-
 # ============================================================================
 # MMP NECESSITY EVALUATION
 # ============================================================================
 
-# Logic: Determine budget threshold based on iOS share
+# Logic: Determine budget threshold
 budget_threshold = 2000  # Default threshold (€2,000 EUR ~ 50,000 CZK)
 effective_budget_threshold = budget_threshold
-
-if ios_share > 50:
-    effective_budget_threshold = 800  # Lower threshold for iOS-heavy apps (€800 EUR ~ 20,000 CZK)
 
 # Determine quadrant
 is_high_budget = monthly_budget >= effective_budget_threshold
@@ -292,20 +273,6 @@ else:  # YOU DON'T NEED AN MMP
         "- Rely on reporting directly from your ad channel\n"
         "- Monitor the situation: once you add a second channel or increase your budget, an MMP will make sense"
     )
-
-# iOS-specific warning
-if ios_share > 50:
-    recommendation_parts.append(
-        f"**📱 iOS Warning:** More than **{ios_share}% of your users** are on iOS. "
-        "Due to **SKAdNetwork** and iOS 14.5+ ATT, measurement on iOS is extremely complex. "
-        "Even with a lower budget, an MMP helps process and normalize SKAdNetwork data."
-    )
-
-    if monthly_budget >= 800 and monthly_budget < 2000:
-        recommendation_parts.append(
-            "⚠️ **Threshold adjusted:** Due to high iOS share, the recommended "
-            "MMP threshold is lowered from €2,000 to **€800 per month**."
-        )
 
 # Display recommendation
 for part in recommendation_parts:
