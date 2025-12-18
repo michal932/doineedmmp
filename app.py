@@ -324,7 +324,7 @@ fig.update_layout(
         tickprefix='€'
     ),
     yaxis=dict(
-        title="<b>Channel Complexity</b>",
+        title="<b>Number of Marketing Channels</b>",
         range=[0, 10],
         gridcolor='lightgray',
         dtick=1
@@ -379,8 +379,11 @@ if category == "MMP IS NECESSARY":
         f"marketing channel{'s' if num_channels > 1 else ''}**, you definitely need an MMP solution."
     )
     recommendation_parts.append(
-        "**Why?** At this investment level and channel complexity, professional "
-        "measurement and attribution are critical for performance optimization and fraud prevention."
+        "**Why MMP makes sense in 2025:**\n"
+        "- **Cross-channel deduplication:** Essential when users see ads on multiple channels before installing\n"
+        "- **Centralized reporting:** Single source of truth for attribution across all campaigns\n"
+        "- **Programmatic network support:** Critical for AppLovin, Unity Ads, and similar networks\n"
+        "- **Reduced engineering burden:** Avoid costly custom development and ongoing maintenance"
     )
 
 elif category == "GRAY ZONE (RISK)":
@@ -389,13 +392,19 @@ elif category == "GRAY ZONE (RISK)":
         "but you're currently working with only **one channel**."
     )
     recommendation_parts.append(
-        "**⚠️ Risks without MMP:**\n"
-        "- **Vendor lock-in:** Dependence on a single ad channel's reporting\n"
-        "- **Ad fraud:** Higher risk of fraudulent installs without independent verification\n"
-        "- **Scalability:** When you add more channels, you'll regret not starting earlier"
+        "**💡 2025 Reality Check:**\n"
+        "Post-ATT, MMPs use probabilistic methods (IP + timestamps) instead of deterministic tracking. "
+        "For single-channel campaigns, **platform-specific solutions** might be more cost-effective:\n"
+        "- **Google Ads:** Firebase Analytics + BigQuery (free)\n"
+        "- **Meta:** SDK + Conversions API hybrid approach\n"
+        "- **Apple Search Ads:** AdServices API\n\n"
+        "MMPs can cost $100K+ annually. At your budget level, consider if this ROI makes sense."
     )
     recommendation_parts.append(
-        "**Recommendation:** Consider an MMP to protect your investment and prepare for growth."
+        "**⚠️ However, consider MMP if:**\n"
+        "- You plan to expand to multiple channels soon\n"
+        "- You need cross-channel deduplication\n"
+        "- Your channel is a programmatic network (AppLovin, Unity Ads)"
     )
 
 elif category == "TECHNICAL NEED":
