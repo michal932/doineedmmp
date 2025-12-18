@@ -170,12 +170,6 @@ fig.add_trace(
 
 # Update layout
 fig.update_layout(
-    title=dict(
-        text="<b>Decision Matrix: Do You Need an MMP?</b>",
-        x=0.5,
-        xanchor='center',
-        font=dict(size=20)
-    ),
     xaxis=dict(
         title="<b>Monthly Media Budget (EUR)</b>",
         range=[0, 20000],
@@ -235,7 +229,7 @@ if category == "MMP IS NECESSARY":
         f"marketing channel{'s' if num_channels > 1 else ''}**, you definitely need an MMP solution."
     )
     recommendation_parts.append(
-        "**Why MMP makes sense in 2025:**\n"
+        "**Why MMP makes sense:**\n"
         "- **Cross-channel deduplication:** Essential when users see ads on multiple channels before installing\n"
         "- **Centralized reporting:** Single source of truth for attribution across all campaigns\n"
         "- **Programmatic network support:** Critical for AppLovin, Unity Ads, and similar networks\n"
