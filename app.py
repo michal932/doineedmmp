@@ -16,7 +16,6 @@ st.set_page_config(
 
 # Title
 st.title("📱 Do I Need an MMP?")
-st.markdown("*Mobile Measurement Partner & SKAdNetwork Decision Tool*")
 
 # Sidebar with input controls
 st.sidebar.header("⚙️ Input Parameters")
