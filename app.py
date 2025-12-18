@@ -332,11 +332,11 @@ st.header("💡 Recommendations for Your App")
 st.subheader("🔧 Mobile Measurement Partner")
 
 # Determine the recommendation category
-if is_high_budget:
+if is_high_complexity and is_high_budget:
     category = "MMP IS NECESSARY"
     color = "red"
     icon = "🔴"
-elif not is_high_budget and is_high_complexity:
+elif is_high_complexity and not is_high_budget:
     category = "TECHNICAL NEED"
     color = "blue"
     icon = "🔵"
