@@ -212,16 +212,6 @@ fig.add_shape(
     layer="below"
 )
 
-# Bottom-Right: Yellow/Orange - "GRAY ZONE (RISK)"
-fig.add_shape(
-    type="rect",
-    x0=x_threshold, y0=0,
-    x1=20000, y1=y_threshold,
-    fillcolor="rgba(255, 193, 7, 0.3)",  # Yellow/Orange
-    line=dict(width=0),
-    layer="below"
-)
-
 # Top-Right: Red - "MMP IS NECESSARY"
 fig.add_shape(
     type="rect",
@@ -247,14 +237,6 @@ annotations = [
         text="<b>TECHNICAL<br>NEED</b>",
         showarrow=False,
         font=dict(size=14, color="darkblue"),
-        bgcolor="rgba(255, 255, 255, 0.7)",
-        borderpad=10
-    ),
-    dict(
-        x=(x_threshold + 20000) / 2, y=y_threshold / 2,
-        text="<b>GRAY ZONE<br>(RISK)</b>",
-        showarrow=False,
-        font=dict(size=14, color="darkorange"),
         bgcolor="rgba(255, 255, 255, 0.7)",
         borderpad=10
     ),
@@ -350,14 +332,10 @@ st.header("💡 Recommendations for Your App")
 st.subheader("🔧 Mobile Measurement Partner")
 
 # Determine the recommendation category
-if is_high_budget and is_high_complexity:
+if is_high_budget:
     category = "MMP IS NECESSARY"
     color = "red"
     icon = "🔴"
-elif is_high_budget and not is_high_complexity:
-    category = "GRAY ZONE (RISK)"
-    color = "orange"
-    icon = "🟠"
 elif not is_high_budget and is_high_complexity:
     category = "TECHNICAL NEED"
     color = "blue"
@@ -384,27 +362,6 @@ if category == "MMP IS NECESSARY":
         "- **Centralized reporting:** Single source of truth for attribution across all campaigns\n"
         "- **Programmatic network support:** Critical for AppLovin, Unity Ads, and similar networks\n"
         "- **Reduced engineering burden:** Avoid costly custom development and ongoing maintenance"
-    )
-
-elif category == "GRAY ZONE (RISK)":
-    recommendation_parts.append(
-        f"Your budget of **€{monthly_budget:,}** is high enough to justify an MMP investment, "
-        "but you're currently working with only **one channel**."
-    )
-    recommendation_parts.append(
-        "**💡 2025 Reality Check:**\n"
-        "Post-ATT, MMPs use probabilistic methods (IP + timestamps) instead of deterministic tracking. "
-        "For single-channel campaigns, **platform-specific solutions** might be more cost-effective:\n"
-        "- **Google Ads:** Firebase Analytics + BigQuery (free)\n"
-        "- **Meta:** SDK + Conversions API hybrid approach\n"
-        "- **Apple Search Ads:** AdServices API\n\n"
-        "MMPs can cost $100K+ annually. At your budget level, consider if this ROI makes sense."
-    )
-    recommendation_parts.append(
-        "**⚠️ However, consider MMP if:**\n"
-        "- You plan to expand to multiple channels soon\n"
-        "- You need cross-channel deduplication\n"
-        "- Your channel is a programmatic network (AppLovin, Unity Ads)"
     )
 
 elif category == "TECHNICAL NEED":
