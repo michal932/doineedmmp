@@ -192,11 +192,11 @@ x_threshold = effective_budget_threshold
 y_threshold = 1.5  # Visual threshold between single and multi-channel
 
 # Add colored quadrant shapes (as rectangles)
-# Bottom-Left: Green - "YOU DON'T NEED AN MMP"
+# Bottom: Green - "YOU DON'T NEED AN MMP" (full width)
 fig.add_shape(
     type="rect",
     x0=0, y0=0,
-    x1=x_threshold, y1=y_threshold,
+    x1=20000, y1=y_threshold,
     fillcolor="rgba(76, 175, 80, 0.3)",  # Green
     line=dict(width=0),
     layer="below"
@@ -225,7 +225,7 @@ fig.add_shape(
 # Add quadrant labels
 annotations = [
     dict(
-        x=x_threshold / 2, y=y_threshold / 2,
+        x=10000, y=y_threshold / 2,
         text="<b>YOU DON'T<br>NEED AN MMP</b>",
         showarrow=False,
         font=dict(size=14, color="darkgreen"),
