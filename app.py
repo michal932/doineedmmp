@@ -57,112 +57,10 @@ uses_affiliate = st.sidebar.checkbox(
 )
 
 st.sidebar.markdown("---")
-
-# Collapsible SKAN section
-with st.sidebar.expander("📱 Is SKAN a good option for me?", expanded=False):
-    st.markdown("*Fill these details for personalized SKAN recommendations*")
-
-    st.markdown("##### 💰 iOS Budget")
-
-    # Input 5: Checkbox for separate iOS budget
-    use_separate_ios_budget = st.checkbox(
-        "I have a separate iOS budget",
-        help="Check this if you allocate a specific budget for iOS campaigns separately from your total budget"
-    )
-
-    # Calculate iOS-specific budget
-    if use_separate_ios_budget:
-        # Input 6: Separate iOS Budget slider
-        monthly_ios_budget = st.slider(
-            "Monthly iOS Budget (€):",
-            min_value=0,
-            max_value=20000,
-            value=int(monthly_budget * ios_share / 100),
-            step=100,
-            format="€%d",
-            help="Your dedicated iOS marketing budget per month"
-        )
-    else:
-        # Calculate from total budget and iOS share
-        monthly_ios_budget = monthly_budget * (ios_share / 100)
-        st.info(f"Calculated: €{int(monthly_ios_budget):,} ({ios_share}% of total budget)")
-
-    st.markdown("##### 🎯 App Details")
-
-    # Input 7: App Category
-    app_category = st.selectbox(
-        "App Category:",
-        ["Gaming", "Finance", "E-commerce", "Education", "Health & Fitness",
-         "Lifestyle", "Utilities", "Media", "Other"]
-    )
-
-    # Input 8: Monetization Model
-    monetization_model = st.selectbox(
-        "Monetization Model:",
-        ["Subscription", "Subscription with trial", "In-app purchases",
-         "Hybrid", "Ad-based", "No monetization"]
-    )
-
-    # Input 9: Primary Goal
-    primary_goal = st.selectbox(
-        "Primary Acquisition Goal:",
-        ["Install", "Registration", "Trial Start", "Purchase", "Retention/Engagement"]
-    )
-
-# If expander is not opened, use default values
-if 'use_separate_ios_budget' not in locals():
-    use_separate_ios_budget = False
-    monthly_ios_budget = monthly_budget * (ios_share / 100)
-    app_category = "Gaming"
-    monetization_model = "In-app purchases"
-    primary_goal = "Install"
-
-st.sidebar.markdown("---")
 st.sidebar.markdown("### 📊 Current Values")
 st.sidebar.metric("Total Budget", f"€{monthly_budget:,}")
-st.sidebar.metric("iOS Budget", f"€{int(monthly_ios_budget):,}")
 st.sidebar.metric("Channels", num_channels)
 st.sidebar.metric("iOS Share", f"{ios_share}%")
-
-# ============================================================================
-# SKAN RELEVANCE EVALUATION
-# ============================================================================
-
-# Base SKAN relevance on iOS budget
-if monthly_ios_budget < 500:
-    skan_relevance = "low"
-    skan_level = "❌ SKAN doesn't make sense"
-    skan_color = "red"
-elif 500 <= monthly_ios_budget < 1000:
-    skan_relevance = "medium"
-    skan_level = "🟡 SKAN makes limited sense"
-    skan_color = "orange"
-else:
-    skan_relevance = "high"
-    skan_level = "✅ SKAN makes sense"
-    skan_color = "green"
-
-# Adjust based on monetization model
-monetization_skan_boost = False
-if monetization_model in ["Subscription", "Subscription with trial"]:
-    monetization_skan_boost = True
-    # Trial and subscription models benefit heavily from SKAN conversion values
-    if skan_relevance == "low" and monthly_ios_budget >= 300:
-        skan_relevance = "medium"
-        skan_level = "🟡 SKAN makes limited sense"
-
-# Adjust based on primary goal
-if primary_goal in ["Purchase", "Trial Start"] and monthly_ios_budget >= 400:
-    if skan_relevance == "low":
-        skan_relevance = "medium"
-        skan_level = "🟡 SKAN makes limited sense"
-
-# Adjust based on app category
-high_ltv_categories = ["Finance", "E-commerce", "Gaming"]
-if app_category in high_ltv_categories and monthly_ios_budget >= 400:
-    if skan_relevance == "low":
-        skan_relevance = "medium"
-        skan_level = "🟡 SKAN makes limited sense"
 
 # ============================================================================
 # MMP NECESSITY EVALUATION
@@ -415,119 +313,23 @@ for part in recommendation_parts:
     st.markdown(part)
     st.markdown("")
 
-# ============================================================================
-# SKAN RECOMMENDATION (Secondary)
-# ============================================================================
-st.markdown("---")
-st.subheader("📱 SKAdNetwork (SKAN)")
-st.markdown(f"### {skan_level}")
-
-# Generate SKAN explanation
-skan_explanation = []
-
-if use_separate_ios_budget:
-    skan_explanation.append(
-        f"Your **dedicated iOS budget is €{int(monthly_ios_budget):,}/month**."
-    )
-else:
-    skan_explanation.append(
-        f"Your **iOS budget is €{int(monthly_ios_budget):,}/month** "
-        f"({ios_share}% of total €{monthly_budget:,} budget)."
-    )
-
-if skan_relevance == "high":
-    skan_explanation.append(
-        "**Why SKAN makes sense:**\n"
-        "- Budget is sufficient to optimize SKAN campaigns\n"
-        "- You can measure post-install events and revenue\n"
-        "- SKAN conversion values will improve campaign performance"
-    )
-
-    if monetization_skan_boost:
-        skan_explanation.append(
-            f"**{monetization_model}** models benefit significantly from SKAN "
-            "revenue tracking and conversion value optimization."
-        )
-
-elif skan_relevance == "medium":
-    skan_explanation.append(
-        "**Limited SKAN value:**\n"
-        "- Budget is modest but can support basic SKAN setup\n"
-        "- Focus on high-value conversion events only\n"
-        "- ROI may be marginal at this spend level"
-    )
-
-    if monetization_skan_boost:
-        skan_explanation.append(
-            f"Your **{monetization_model}** model increases SKAN priority. "
-            "Proper setup can help optimize for high-LTV users."
-        )
-
-    if primary_goal in ["Purchase", "Trial Start"]:
-        skan_explanation.append(
-            f"Your goal (**{primary_goal}**) aligns well with SKAN conversion tracking."
-        )
-
-else:  # low relevance
-    skan_explanation.append(
-        "**Why SKAN doesn't make sense yet:**\n"
-        "- iOS budget is too low for meaningful SKAN optimization\n"
-        "- Setup complexity outweighs potential benefits\n"
-        "- Focus on increasing budget or iOS share first"
-    )
-
-    if ios_share < 30:
-        skan_explanation.append(
-            f"Your iOS share is only {ios_share}%. SKAN becomes valuable when "
-            "iOS represents a larger portion of your user base."
-        )
-
-# Special case: No monetization
-if monetization_model == "No monetization":
-    skan_explanation.append(
-        "**⚠️ Note:** Without monetization, SKAN revenue signals won't apply. "
-        "Focus on event-based conversion values instead."
-    )
-
-for part in skan_explanation:
-    st.markdown(part)
-    st.markdown("")
-
 # Additional info section
 st.markdown("---")
-st.markdown("### 📚 Learn More")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("#### What is an MMP?")
-    st.markdown("""
-    **Mobile Measurement Partner (MMP)** is an independent platform for:
-    - 📊 **Attribution** - assigning installs to the right campaigns
-    - 🔍 **Cross-channel analytics** - unified view across all channels
-    - 🛡️ **Fraud prevention** - detecting fraudulent installs
-    - 🔗 **Deep linking** - advanced user navigation
-    - 📡 **Postbacks** - automated communication with partners
-    """)
-
-with col2:
-    st.markdown("#### What is SKAdNetwork?")
-    st.markdown("""
-    **SKAdNetwork (SKAN)** is Apple's privacy-focused attribution framework:
-    - 🍎 **iOS 14.5+** - required for iOS attribution
-    - 🔒 **Privacy-first** - no device-level tracking
-    - 📊 **Conversion values** - measure post-install events
-    - ⏱️ **Delayed reporting** - 24-72 hour attribution windows
-    - 🎯 **Campaign optimization** - limited but valuable data
-
-    **Note:** MMPs like AppsFlyer and Adjust help you set up and optimize SKAN campaigns.
-    """)
+st.markdown("### 📚 What is an MMP?")
+st.markdown("""
+**Mobile Measurement Partner (MMP)** is an independent platform for:
+- 📊 **Attribution** - assigning installs to the right campaigns
+- 🔍 **Cross-channel analytics** - unified view across all channels
+- 🛡️ **Fraud prevention** - detecting fraudulent installs
+- 🔗 **Deep linking** - advanced user navigation
+- 📡 **Postbacks** - automated communication with partners
+""")
 
 # Footer
 st.markdown("---")
 st.markdown(
     "<div style='text-align: center; color: gray;'>"
-    "MMP Necessity Calculator | © 2025 | "
+    "MMP Necessity Calculator | "
     "For guidance purposes only"
     "</div>",
     unsafe_allow_html=True
